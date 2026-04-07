@@ -999,7 +999,6 @@ function validate() {
 }
 
 // ── SUBMIT → GOOGLE SHEETS ────────────────────────────────
-// Replace the URL below with your deployed Apps Script Web App URL
 const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycby9PEkTfzv3hiESXb_6MhwBATXAOUUSfWISe0IOqx-IuX0NUte_Zb--d5mINCPetRUt/exec';
 
 const NODE_LABELS = {
@@ -1024,10 +1023,8 @@ document.getElementById('workshopForm').addEventListener('submit', async functio
   btn.disabled = true;
   btn.innerHTML = '<span class="btn-icon">⏳</span> Submitting...';
 
-  // Build payload
+  // Build payload object
   const payload = {};
-
-  // All text/email/textarea fields
   [
     'email','name','role',
     'n1_main','n2_main','n3_main','n4_main','n5_main','n6_main',
@@ -1038,23 +1035,28 @@ document.getElementById('workshopForm').addEventListener('submit', async functio
     if (el) payload[id] = el.value.trim();
   });
 
-  // Radio selections — send readable label
-  ['own_node', 'weak_node'].forEach(name => {
+  ['own_node','weak_node'].forEach(name => {
     const checked = document.querySelector(`input[name="${name}"]:checked`);
     payload[name] = checked ? (NODE_LABELS[checked.value] || checked.value) : '';
   });
 
   payload['submitted_at'] = new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' });
 
+  // ── KEY FIX: use URLSearchParams not JSON ──────────────
+  // Apps Script receives e.parameter (not e.postData.contents)
+  // when Content-Type is application/x-www-form-urlencoded.
+  // JSON + no-cors silently drops the body — this does not.
+  const formBody = new URLSearchParams();
+  Object.keys(payload).forEach(key => formBody.append(key, payload[key]));
+
   try {
     await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(payload)
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: formBody.toString()
     });
 
-    // no-cors means we can't read the response — assume success if no throw
     document.getElementById('workshopForm').style.display = 'none';
     const s = document.getElementById('successScreen');
     s.style.display = 'block';
