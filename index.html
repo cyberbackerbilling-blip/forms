@@ -586,15 +586,13 @@
     <p>Thank you. Your answers have been submitted and will be reviewed together during the debrief session. Come ready to discuss your node and the dependencies you identified.</p>
   </div>
 
-  <form id="workshopForm" name="workshop-responses" netlify netlify-honeypot="bot-field" novalidate>
-    <input type="hidden" name="form-name" value="workshop-responses">
-    <p style="display:none"><label>Don't fill this out: <input name="bot-field"></label></p>
+  <form id="workshopForm" novalidate>
 
     <!-- ── INTRO ── -->
     <div class="node-section" id="sec-intro">
       <div class="node-header">
         <div class="node-title-tag">Before You Begin</div>
-        <div class="node-title">Hello, Moneybacker!</div>
+        <div class="node-title">Your Identity + Context</div>
       </div>
       <div class="questions-wrap">
         <div class="question-block">
@@ -1000,8 +998,20 @@ function validate() {
   return valid;
 }
 
-// ── SUBMIT ────────────────────────────────────────────────
-document.getElementById('workshopForm').addEventListener('submit', function(e) {
+// ── SUBMIT → GOOGLE SHEETS ────────────────────────────────
+// Replace the URL below with your deployed Apps Script Web App URL
+const APPS_SCRIPT_URL = 'YOUR_WEB_APP_URL_HERE';
+
+const NODE_LABELS = {
+  '1': 'Node 1 — Attract Talent',
+  '2': 'Node 2 — Rigorous Vetting',
+  '3': 'Node 3 — CBU + Skill Rating',
+  '4': 'Node 4 — Tiered Placement',
+  '5': 'Node 5 — Value Appreciation',
+  '6': 'Node 6 — Enterprise Sales'
+};
+
+document.getElementById('workshopForm').addEventListener('submit', async function(e) {
   e.preventDefault();
 
   if (!validate()) {
@@ -1010,33 +1020,53 @@ document.getElementById('workshopForm').addEventListener('submit', function(e) {
     return;
   }
 
-  // Disable button to prevent double-submit
   const btn = document.querySelector('.submit-btn');
   btn.disabled = true;
   btn.innerHTML = '<span class="btn-icon">⏳</span> Submitting...';
 
-  // Build FormData — Netlify reads this natively
-  const formData = new FormData(document.getElementById('workshopForm'));
+  // Build payload
+  const payload = {};
 
-  fetch('/', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-    body: new URLSearchParams(formData).toString()
-  })
-  .then(() => {
-    // ── Show success ──
+  // All text/email/textarea fields
+  [
+    'email','name','role',
+    'n1_main','n2_main','n3_main','n4_main','n5_main','n6_main',
+    'n1_scale','n2_scale','n3_scale','n4_scale','n5_scale','n6_scale',
+    'change90','dependency','open'
+  ].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) payload[id] = el.value.trim();
+  });
+
+  // Radio selections — send readable label
+  ['own_node', 'weak_node'].forEach(name => {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    payload[name] = checked ? (NODE_LABELS[checked.value] || checked.value) : '';
+  });
+
+  payload['submitted_at'] = new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' });
+
+  try {
+    await fetch(https://script.google.com/macros/s/AKfycbyfLkcidRCuuKAAjUhHpN52RkjmpZ-Vjx8M4wZsNrRyF8EHksIwbXe-fNPrkuv2Bkog/exec, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+
+    // no-cors means we can't read the response — assume success if no throw
     document.getElementById('workshopForm').style.display = 'none';
     const s = document.getElementById('successScreen');
     s.style.display = 'block';
     document.getElementById('progressFill').style.width = '100%';
     document.getElementById('progressCount').textContent = 'Complete';
     window.scrollTo({ top: 0, behavior: 'smooth' });
-  })
-  .catch(() => {
+
+  } catch {
+    alert('Network error. Please check your connection and try again.');
     btn.disabled = false;
     btn.innerHTML = '<span class="btn-icon">✦</span> Submit My Responses';
-    alert('Something went wrong. Please check your connection and try again.');
-  });
+  }
 });
 </script>
 </body>
