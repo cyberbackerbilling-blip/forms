@@ -1047,7 +1047,7 @@ document.getElementById('workshopForm').addEventListener('submit', async functio
   payload['submitted_at'] = new Date().toLocaleString('en-PH', { timeZone: 'Asia/Manila' });
 
   try {
-    await fetch(https://script.google.com/macros/s/AKfycbyfLkcidRCuuKAAjUhHpN52RkjmpZ-Vjx8M4wZsNrRyF8EHksIwbXe-fNPrkuv2Bkog/exec, {
+    await fetch(APPS_SCRIPT_URL, {
       method: 'POST',
       mode: 'no-cors',
       headers: { 'Content-Type': 'application/json' },
