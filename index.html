@@ -1,0 +1,1033 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Which Node Do You Own? — Cyberbacker Workshop</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;700;900&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --navy:   #0D1B2A;
+    --navy2:  #152436;
+    --navy3:  #1E3348;
+    --gold:   #C9973A;
+    --gold2:  #E8B84B;
+    --gold3:  #F5D080;
+    --cream:  #F9F5EE;
+    --white:  #FFFFFF;
+    --gray1:  #E8E4DC;
+    --gray2:  #B8B4AC;
+    --gray3:  #6B6860;
+    --red:    #C0392B;
+    --success:#1A6B45;
+    --radius: 10px;
+    --shadow: 0 4px 24px rgba(13,27,42,0.13);
+  }
+
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--cream);
+    color: var(--navy);
+    min-height: 100vh;
+  }
+
+  /* ── HERO HEADER ── */
+  .hero {
+    background: var(--navy);
+    position: relative;
+    overflow: hidden;
+    padding: 64px 32px 56px;
+    text-align: center;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background:
+      repeating-linear-gradient(
+        45deg,
+        transparent,
+        transparent 60px,
+        rgba(201,151,58,0.04) 60px,
+        rgba(201,151,58,0.04) 61px
+      );
+  }
+  .hero-eyebrow {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 20px;
+    position: relative;
+  }
+  .hero-eyebrow::before, .hero-eyebrow::after {
+    content: '—';
+    margin: 0 10px;
+    opacity: 0.5;
+  }
+  .hero h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 5vw, 52px);
+    font-weight: 900;
+    color: var(--white);
+    line-height: 1.1;
+    margin-bottom: 12px;
+    position: relative;
+  }
+  .hero h1 span { color: var(--gold2); }
+  .hero-sub {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--gray2);
+    max-width: 540px;
+    margin: 0 auto 32px;
+    line-height: 1.7;
+    position: relative;
+  }
+  .hero-divider {
+    width: 64px;
+    height: 2px;
+    background: var(--gold);
+    margin: 0 auto 28px;
+    position: relative;
+  }
+  .hero-quote {
+    display: inline-block;
+    background: rgba(201,151,58,0.12);
+    border-left: 3px solid var(--gold);
+    padding: 14px 24px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    font-size: 14px;
+    font-style: italic;
+    color: var(--gold3);
+    max-width: 500px;
+    position: relative;
+    text-align: left;
+  }
+  .hero-quote cite {
+    display: block;
+    font-style: normal;
+    font-size: 12px;
+    color: var(--gray2);
+    margin-top: 6px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── PROGRESS BAR ── */
+  .progress-wrap {
+    background: var(--navy2);
+    padding: 0 32px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    border-bottom: 1px solid rgba(201,151,58,0.2);
+  }
+  .progress-inner {
+    max-width: 820px;
+    margin: 0 auto;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px 0;
+  }
+  .progress-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--gold);
+    white-space: nowrap;
+    min-width: 80px;
+  }
+  .progress-track {
+    flex: 1;
+    height: 4px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: linear-gradient(90deg, var(--gold), var(--gold2));
+    border-radius: 2px;
+    width: 0%;
+    transition: width 0.4s ease;
+  }
+  .progress-count {
+    font-size: 12px;
+    color: var(--gray2);
+    white-space: nowrap;
+    min-width: 50px;
+    text-align: right;
+  }
+
+  /* ── FORM CONTAINER ── */
+  .form-wrap {
+    max-width: 820px;
+    margin: 0 auto;
+    padding: 48px 24px 80px;
+  }
+
+  /* ── NODE SECTION ── */
+  .node-section {
+    background: var(--white);
+    border-radius: 16px;
+    box-shadow: var(--shadow);
+    margin-bottom: 32px;
+    overflow: hidden;
+    border: 1px solid var(--gray1);
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease, transform 0.5s ease;
+  }
+  .node-section.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .node-header {
+    background: var(--navy);
+    padding: 28px 32px 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .node-header::after {
+    content: '';
+    position: absolute;
+    right: -20px;
+    top: -20px;
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    background: rgba(201,151,58,0.07);
+  }
+  .node-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    background: var(--gold);
+    color: var(--navy);
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    font-weight: 700;
+    border-radius: 50%;
+    margin-bottom: 12px;
+  }
+  .node-title {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    font-weight: 700;
+    color: var(--white);
+    letter-spacing: 0.3px;
+  }
+  .node-title-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  /* ── CONTEXT BOX ── */
+  .context-box {
+    background: #F5F0E8;
+    border-left: 4px solid var(--gold);
+    margin: 0 32px 0;
+    padding: 20px 24px;
+    border-radius: 0 var(--radius) var(--radius) 0;
+    position: relative;
+    margin-top: 24px;
+  }
+  .context-box-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .context-box-label::before {
+    content: '📖';
+    font-size: 12px;
+  }
+  .context-box p {
+    font-size: 13.5px;
+    line-height: 1.75;
+    color: var(--gray3);
+  }
+  .context-box p + p { margin-top: 10px; }
+  .context-box strong { color: var(--navy); font-weight: 600; }
+  .context-box em {
+    display: block;
+    margin-top: 12px;
+    padding: 10px 14px;
+    background: rgba(201,151,58,0.1);
+    border-radius: 6px;
+    font-style: italic;
+    font-size: 13px;
+    color: var(--navy2);
+  }
+
+  /* ── QUESTIONS ── */
+  .questions-wrap { padding: 24px 32px 32px; }
+
+  .question-block { margin-bottom: 28px; }
+  .question-block:last-child { margin-bottom: 0; }
+
+  .q-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 600;
+    color: var(--navy);
+    margin-bottom: 6px;
+    line-height: 1.45;
+  }
+  .q-hint {
+    font-size: 12.5px;
+    color: var(--gray3);
+    margin-bottom: 10px;
+    font-style: italic;
+  }
+  .q-required { color: var(--gold); margin-left: 2px; }
+
+  textarea {
+    width: 100%;
+    min-height: 110px;
+    padding: 14px 16px;
+    border: 1.5px solid var(--gray1);
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--navy);
+    background: var(--cream);
+    resize: vertical;
+    transition: border-color 0.2s, box-shadow 0.2s;
+    line-height: 1.6;
+  }
+  textarea:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,151,58,0.12);
+    background: var(--white);
+  }
+  textarea.error { border-color: var(--red); }
+
+  input[type="text"], input[type="email"] {
+    width: 100%;
+    padding: 12px 16px;
+    border: 1.5px solid var(--gray1);
+    border-radius: var(--radius);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    color: var(--navy);
+    background: var(--cream);
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  input[type="text"]:focus, input[type="email"]:focus {
+    outline: none;
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(201,151,58,0.12);
+    background: var(--white);
+  }
+  input.error { border-color: var(--red); }
+
+  /* ── SCALE ── */
+  .scale-wrap {
+    display: flex;
+    gap: 8px;
+    align-items: stretch;
+    margin-top: 4px;
+  }
+  .scale-labels {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 8px;
+    font-size: 11px;
+    color: var(--gray3);
+    font-style: italic;
+  }
+  .scale-btn {
+    flex: 1;
+    padding: 10px 4px;
+    border: 1.5px solid var(--gray1);
+    border-radius: 8px;
+    background: var(--cream);
+    cursor: pointer;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--gray3);
+    transition: all 0.15s;
+    font-family: 'DM Sans', sans-serif;
+  }
+  .scale-btn:hover {
+    border-color: var(--gold2);
+    color: var(--navy);
+    background: #FBF5E6;
+  }
+  .scale-btn.selected {
+    background: var(--navy);
+    border-color: var(--navy);
+    color: var(--gold2);
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(13,27,42,0.2);
+  }
+
+  /* ── RADIO / SELECT ── */
+  .radio-group { display: flex; flex-direction: column; gap: 8px; }
+  .radio-option {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 16px;
+    border: 1.5px solid var(--gray1);
+    border-radius: var(--radius);
+    cursor: pointer;
+    transition: all 0.15s;
+    background: var(--cream);
+  }
+  .radio-option:hover { border-color: var(--gold2); background: #FBF5E6; }
+  .radio-option input[type="radio"] { display: none; }
+  .radio-dot {
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    border: 2px solid var(--gray2);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s;
+  }
+  .radio-option.selected { border-color: var(--navy); background: var(--white); }
+  .radio-option.selected .radio-dot {
+    border-color: var(--gold);
+    background: var(--navy);
+  }
+  .radio-option.selected .radio-dot::after {
+    content: '';
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background: var(--gold);
+  }
+  .radio-label { font-size: 14px; color: var(--navy); font-weight: 400; }
+  .radio-option.selected .radio-label { font-weight: 500; }
+
+  /* ── SECTION DIVIDER ── */
+  .section-divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 8px 0 32px;
+  }
+  .section-divider-line { flex: 1; height: 1px; background: var(--gray1); }
+  .section-divider-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 2.5px;
+    text-transform: uppercase;
+    color: var(--gray2);
+    white-space: nowrap;
+  }
+
+  /* ── REFLECTION SECTION ── */
+  .reflection-header {
+    background: linear-gradient(135deg, var(--navy3), var(--navy));
+    padding: 28px 32px 24px;
+    border-radius: 16px 16px 0 0;
+  }
+
+  /* ── SUBMIT BUTTON ── */
+  .submit-area {
+    text-align: center;
+    margin-top: 40px;
+  }
+  .submit-note {
+    font-size: 13px;
+    color: var(--gray3);
+    margin-bottom: 20px;
+  }
+  .submit-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    background: var(--navy);
+    color: var(--white);
+    border: none;
+    padding: 18px 48px;
+    border-radius: 50px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    letter-spacing: 0.5px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 16px rgba(13,27,42,0.25);
+    position: relative;
+    overflow: hidden;
+  }
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 50%, rgba(201,151,58,0.15));
+  }
+  .submit-btn:hover {
+    background: var(--navy2);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 24px rgba(13,27,42,0.3);
+  }
+  .submit-btn:active { transform: translateY(0); }
+  .submit-btn .btn-icon { font-size: 18px; }
+
+  /* ── SUCCESS STATE ── */
+  .success-screen {
+    display: none;
+    text-align: center;
+    padding: 80px 32px;
+    max-width: 560px;
+    margin: 0 auto;
+  }
+  .success-icon {
+    width: 72px;
+    height: 72px;
+    background: var(--navy);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 24px;
+    font-size: 32px;
+  }
+  .success-screen h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--navy);
+    margin-bottom: 12px;
+  }
+  .success-screen p {
+    font-size: 15px;
+    color: var(--gray3);
+    line-height: 1.7;
+  }
+
+  /* ── ERROR MESSAGE ── */
+  .field-error {
+    color: var(--red);
+    font-size: 12px;
+    margin-top: 5px;
+    display: none;
+  }
+  .field-error.show { display: block; }
+
+  /* ── FOOTER ── */
+  .form-footer {
+    text-align: center;
+    padding: 32px;
+    font-size: 12px;
+    color: var(--gray3);
+    border-top: 1px solid var(--gray1);
+    background: var(--white);
+    margin-top: 0;
+  }
+  .form-footer strong { color: var(--navy); }
+
+  @media (max-width: 600px) {
+    .hero { padding: 48px 20px 40px; }
+    .form-wrap { padding: 32px 16px 60px; }
+    .node-header, .questions-wrap, .context-box { padding-left: 20px; padding-right: 20px; }
+    .context-box { margin-left: 20px; margin-right: 20px; }
+    .scale-btn { font-size: 13px; padding: 8px 2px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- ══ HERO ══════════════════════════════════════════════ -->
+<div class="hero">
+  <div class="hero-eyebrow">Workshop Activity</div>
+  <h1>Which Node Do <span>You</span> Own?</h1>
+  <p class="hero-sub">And what does pushing it look like in the next 90 days?</p>
+  <div class="hero-divider"></div>
+  <div class="hero-quote">
+    "The right people in the right seats — then figure out where to drive."
+    <cite>— Jim Collins, Good to Great</cite>
+  </div>
+</div>
+
+<!-- ══ PROGRESS ══════════════════════════════════════════ -->
+<div class="progress-wrap">
+  <div class="progress-inner">
+    <span class="progress-label">Progress</span>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    <span class="progress-count" id="progressCount">0 / 9</span>
+  </div>
+</div>
+
+<!-- ══ FORM ══════════════════════════════════════════════ -->
+<div class="form-wrap">
+  <div id="successScreen" class="success-screen">
+    <div class="success-icon">✦</div>
+    <h2>Response Recorded</h2>
+    <p>Thank you. Your answers have been submitted and will be reviewed together during the debrief session. Come ready to discuss your node and the dependencies you identified.</p>
+  </div>
+
+  <form id="workshopForm" novalidate>
+
+    <!-- ── INTRO ── -->
+    <div class="node-section" id="sec-intro">
+      <div class="node-header">
+        <div class="node-title-tag">Before You Begin</div>
+        <div class="node-title">Your Identity + Context</div>
+      </div>
+      <div class="questions-wrap">
+        <div class="question-block">
+          <label class="q-label" for="email">Work Email <span class="q-required">*</span></label>
+          <input type="email" id="email" name="email" placeholder="yourname@cyberbacker.com" required>
+          <div class="field-error" id="err-email">Please enter your work email.</div>
+        </div>
+        <div class="question-block">
+          <label class="q-label" for="name">Full Name <span class="q-required">*</span></label>
+          <input type="text" id="name" name="name" placeholder="Your full name" required>
+          <div class="field-error" id="err-name">Please enter your name.</div>
+        </div>
+        <div class="question-block">
+          <label class="q-label" for="role">Your Role / Department <span class="q-required">*</span></label>
+          <input type="text" id="role" name="role" placeholder="e.g. Account Manager, Billing, CBU Trainer..." required>
+          <div class="field-error" id="err-role">Please enter your role.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NODE 1 ══ -->
+    <div class="section-divider">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-label">The 6 Nodes</div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <div class="node-section" id="sec-n1">
+      <div class="node-header">
+        <div class="node-number">1</div>
+        <div class="node-title-tag">Node One</div>
+        <div class="node-title">Attract Talent</div>
+      </div>
+      <div class="context-box">
+        <div class="context-box-label">Good to Great — Connection</div>
+        <p>Collins found that great companies obsess over getting the <strong>right people on the bus</strong> before deciding where to drive. Attraction is not just marketing — it is signal quality. Who reaches Cyberbacker, and why, determines the ceiling of every node that follows.</p>
+        <p>If we attract mediocre applicants, the best vetting in the world still produces mediocre outputs. Your role either widens or narrows the talent pool that becomes possible Cyberbackers.</p>
+        <em>"People are not your most important asset. The right people are." — Jim Collins</em>
+      </div>
+      <div class="questions-wrap">
+        <div class="question-block">
+          <label class="q-label" for="n1_main">How does your role bring the best people closer to Cyberbacker? <span class="q-required">*</span></label>
+          <div class="q-hint">Be specific. Describe an action, a process, or a behavior — not a general statement.</div>
+          <textarea id="n1_main" name="n1_main" placeholder="Your answer..." required></textarea>
+          <div class="field-error" id="err-n1_main">This field is required.</div>
+        </div>
+        <div class="question-block">
+          <label class="q-label">How confident are you that your current actions directly move this node?</label>
+          <div class="q-hint">1 = Not connected at all &nbsp;|&nbsp; 5 = Directly and measurably contributing</div>
+          <div class="scale-wrap" data-field="n1_scale">
+            <button type="button" class="scale-btn" data-val="1">1</button>
+            <button type="button" class="scale-btn" data-val="2">2</button>
+            <button type="button" class="scale-btn" data-val="3">3</button>
+            <button type="button" class="scale-btn" data-val="4">4</button>
+            <button type="button" class="scale-btn" data-val="5">5</button>
+          </div>
+          <div class="scale-labels"><span>Not connected</span><span>Directly contributing</span></div>
+          <input type="hidden" id="n1_scale" name="n1_scale">
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NODE 2 ══ -->
+    <div class="node-section" id="sec-n2">
+      <div class="node-header">
+        <div class="node-number">2</div>
+        <div class="node-title-tag">Node Two</div>
+        <div class="node-title">Rigorous Vetting</div>
+      </div>
+      <div class="context-box">
+        <div class="context-box-label">Good to Great — Connection</div>
+        <p>Collins distinguishes <strong>rigorous from ruthless</strong>. Ruthless cuts indiscriminately. Rigorous applies exacting standards consistently. The &lt;1% standard is not a rejection rate — it is a commitment to never lowering the bar when the pipeline is thin.</p>
+        <p>Every compromise here compounds downstream: a wrong placement stresses the client, costs the team, and drags the flywheel backward.</p>
+        <em>"When in doubt, don't hire — keep looking." — Jim Collins</em>
+      </div>
+      <div class="questions-wrap">
+        <div class="question-block">
+          <label class="q-label" for="n2_main">How does your role protect the &lt;1% standard? <span class="q-required">*</span></label>
+          <div class="q-hint">What do you do — or should do — to ensure standards are never quietly lowered?</div>
+          <textarea id="n2_main" name="n2_main" placeholder="Your answer..." required></textarea>
+          <div class="field-error" id="err-n2_main">This field is required.</div>
+        </div>
+        <div class="question-block">
+          <label class="q-label">How often do you feel pressure to pass someone who probably should not pass?</label>
+          <div class="q-hint">1 = Never &nbsp;|&nbsp; 5 = Frequently</div>
+          <div class="scale-wrap" data-field="n2_scale">
+            <button type="button" class="scale-btn" data-val="1">1</button>
+            <button type="button" class="scale-btn" data-val="2">2</button>
+            <button type="button" class="scale-btn" data-val="3">3</button>
+            <button type="button" class="scale-btn" data-val="4">4</button>
+            <button type="button" class="scale-btn" data-val="5">5</button>
+          </div>
+          <div class="scale-labels"><span>Never</span><span>Frequently</span></div>
+          <input type="hidden" id="n2_scale" name="n2_scale">
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NODE 3 ══ -->
+    <div class="node-section" id="sec-n3">
+      <div class="node-header">
+        <div class="node-number">3</div>
+        <div class="node-title-tag">Node Three</div>
+        <div class="node-title">CBU + Skill Rating</div>
+      </div>
+      <div class="context-box">
+        <div class="context-box-label">Good to Great — Connection</div>
+        <p>Character is harder to teach than skill — but <strong>skill still matters</strong>. CBU and the skill rating system convert raw talent into deployable, rated, client-ready professionals. Without this node, placement becomes guesswork and client satisfaction becomes luck.</p>
+        <p>This is where Cyberbacker's promise to clients is either built or merely assumed.</p>
+        <em>"People can learn skills. What they cannot learn are the essential character traits that make them right for your organization." — Jim Collins</em>
+      </div>
+      <div class="questions-wrap">
+        <div class="question-block">
+          <label class="q-label" for="n3_main">How does your role ensure Cyberbackers are trained before they are placed? <span class="q-required">*</span></label>
+          <div class="q-hint">What does your role actively do to close skill gaps before a CB reaches a client?</div>
+          <textarea id="n3_main" name="n3_main" placeholder="Your answer..." required></textarea>
+          <div class="field-error" id="err-n3_main">This field is required.</div>
+        </div>
+        <div class="question-block">
+          <label class="q-label">How well does current CBU training reflect what clients actually need from Cyberbackers?</label>
+          <div class="q-hint">1 = Major gap &nbsp;|&nbsp; 5 = Tightly aligned to client needs</div>
+          <div class="scale-wrap" data-field="n3_scale">
+            <button type="button" class="scale-btn" data-val="1">1</button>
+            <button type="button" class="scale-btn" data-val="2">2</button>
+            <button type="button" class="scale-btn" data-val="3">3</button>
+            <button type="button" class="scale-btn" data-val="4">4</button>
+            <button type="button" class="scale-btn" data-val="5">5</button>
+          </div>
+          <div class="scale-labels"><span>Major gap</span><span>Tightly aligned</span></div>
+          <input type="hidden" id="n3_scale" name="n3_scale">
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NODE 4 ══ -->
+    <div class="node-section" id="sec-n4">
+      <div class="node-header">
+        <div class="node-number">4</div>
+        <div class="node-title-tag">Node Four</div>
+        <div class="node-title">Tiered Placement</div>
+      </div>
+      <div class="context-box">
+        <div class="context-box-label">Good to Great — Connection</div>
+        <p>Collins calls this the <strong>right people in the right seats</strong>. A Cyberbacker who is a good match but not a great match will eventually churn — on the client side or the CB side. Tiered placement means we do not just fill seats. We engineer fit.</p>
+        <p>A mismatch here creates downstream collections risk, replacement cost, and a trust deficit with the client.</p>
+        <em>"One would be people. Two would be people. Three would be people. A huge part of our transition can be attributed to our discipline in picking the right people." — Circuit City VP, Good to Great</em>
+      </div>
+      <div class="questions-wrap">
+        <div class="question-block">
+          <label class="q-label" for="n4_main">How does your role move clients from Good Match to Great Match? <span class="q-required">*</span></label>
+          <div class="q-hint">What criteria, signals, or processes does your role use to push toward a Great Match — not just an acceptable one?</div>
+          <textarea id="n4_main" name="n4_main" placeholder="Your answer..." required></textarea>
+          <div class="field-error" id="err-n4_main">This field is required.</div>
+        </div>
+        <div class="question-block">
+          <label class="q-label">How clear are the criteria that define "Great Match" vs "Good Match" in your role?</label>
+          <div class="q-hint">1 = No clear criteria, pure judgment &nbsp;|&nbsp; 5 = Explicit and consistently applied</div>
+          <div class="scale-wrap" data-field="n4_scale">
+            <button type="button" class="scale-btn" data-val="1">1</button>
+            <button type="button" class="scale-btn" data-val="2">2</button>
+            <button type="button" class="scale-btn" data-val="3">3</button>
+            <button type="button" class="scale-btn" data-val="4">4</button>
+            <button type="button" class="scale-btn" data-val="5">5</button>
+          </div>
+          <div class="scale-labels"><span>No clear criteria</span><span>Explicit and consistent</span></div>
+          <input type="hidden" id="n4_scale" name="n4_scale">
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NODE 5 ══ -->
+    <div class="node-section" id="sec-n5">
+      <div class="node-header">
+        <div class="node-number">5</div>
+        <div class="node-title-tag">Node Five</div>
+        <div class="node-title">Value Appreciation</div>
+      </div>
+      <div class="context-box">
+        <div class="context-box-label">Good to Great — Connection</div>
+        <p>The <strong>flywheel</strong> does not spin from a single push — it builds from consistent, compounding effort. Value appreciation is how Cyberbacker converts a satisfied client into an expanding one.</p>
+        <p>If clients don't feel the Cyberbacker growing, they plateau. If CBs don't feel their value recognized, they disengage. Both sides of the relationship must feel the momentum.</p>
+        <em>"Good-to-great transformations never happened in one fell swoop. The flywheel builds momentum, eventually hitting a point of breakthrough." — Jim Collins</em>
+      </div>
+      <div class="questions-wrap">
+        <div class="question-block">
+          <label class="q-label" for="n5_main">How does your role help Cyberbackers grow — so clients stay and expand? <span class="q-required">*</span></label>
+          <div class="q-hint">What does your role actively do to develop CBs and deepen client relationships over time?</div>
+          <textarea id="n5_main" name="n5_main" placeholder="Your answer..." required></textarea>
+          <div class="field-error" id="err-n5_main">This field is required.</div>
+        </div>
+        <div class="question-block">
+          <label class="q-label">How systematically does your team track CB growth relative to client retention and expansion?</label>
+          <div class="q-hint">1 = We don't track this &nbsp;|&nbsp; 5 = Clear metrics, reviewed regularly</div>
+          <div class="scale-wrap" data-field="n5_scale">
+            <button type="button" class="scale-btn" data-val="1">1</button>
+            <button type="button" class="scale-btn" data-val="2">2</button>
+            <button type="button" class="scale-btn" data-val="3">3</button>
+            <button type="button" class="scale-btn" data-val="4">4</button>
+            <button type="button" class="scale-btn" data-val="5">5</button>
+          </div>
+          <div class="scale-labels"><span>Not tracked</span><span>Reviewed regularly</span></div>
+          <input type="hidden" id="n5_scale" name="n5_scale">
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ NODE 6 ══ -->
+    <div class="node-section" id="sec-n6">
+      <div class="node-header">
+        <div class="node-number">6</div>
+        <div class="node-title-tag">Node Six</div>
+        <div class="node-title">Enterprise Sales</div>
+      </div>
+      <div class="context-box">
+        <div class="context-box-label">Good to Great — Connection</div>
+        <p>Great companies don't grow through charisma — they grow because the <strong>flywheel is already turning</strong>. Enterprise sales at scale requires proof: quality, repeatability, ROI. Every other node feeds this one.</p>
+        <p>If nodes 1–5 are working, enterprise sales becomes a storytelling problem. If they aren't, it becomes a credibility problem no pitch deck can fix.</p>
+        <em>"Greatness is not a function of circumstance. Greatness, it turns out, is largely a matter of conscious choice." — Jim Collins</em>
+      </div>
+      <div class="questions-wrap">
+        <div class="question-block">
+          <label class="q-label" for="n6_main">How does your role make it easier to prove our value at scale? <span class="q-required">*</span></label>
+          <div class="q-hint">What does your role contribute — in data, process, outcomes, or relationships — that supports enterprise growth?</div>
+          <textarea id="n6_main" name="n6_main" placeholder="Your answer..." required></textarea>
+          <div class="field-error" id="err-n6_main">This field is required.</div>
+        </div>
+        <div class="question-block">
+          <label class="q-label">How well-equipped do you feel to articulate Cyberbacker's value to a new enterprise client?</label>
+          <div class="q-hint">1 = Would not know where to start &nbsp;|&nbsp; 5 = Clear and confident</div>
+          <div class="scale-wrap" data-field="n6_scale">
+            <button type="button" class="scale-btn" data-val="1">1</button>
+            <button type="button" class="scale-btn" data-val="2">2</button>
+            <button type="button" class="scale-btn" data-val="3">3</button>
+            <button type="button" class="scale-btn" data-val="4">4</button>
+            <button type="button" class="scale-btn" data-val="5">5</button>
+          </div>
+          <div class="scale-labels"><span>Would not know where to start</span><span>Clear and confident</span></div>
+          <input type="hidden" id="n6_scale" name="n6_scale">
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ REFLECTION ══ -->
+    <div class="section-divider">
+      <div class="section-divider-line"></div>
+      <div class="section-divider-label">Reflection</div>
+      <div class="section-divider-line"></div>
+    </div>
+
+    <div class="node-section" id="sec-ref">
+      <div class="reflection-header">
+        <div class="node-title-tag">Your Node Ownership</div>
+        <div class="node-title" style="color:var(--white)">Reflection Questions</div>
+      </div>
+      <div class="questions-wrap">
+
+        <div class="question-block">
+          <label class="q-label">Which node do you feel the most ownership over right now? <span class="q-required">*</span></label>
+          <div class="radio-group" id="ownNode">
+            <label class="radio-option"><input type="radio" name="own_node" value="1"><div class="radio-dot"></div><span class="radio-label">Node 1 — Attract Talent</span></label>
+            <label class="radio-option"><input type="radio" name="own_node" value="2"><div class="radio-dot"></div><span class="radio-label">Node 2 — Rigorous Vetting</span></label>
+            <label class="radio-option"><input type="radio" name="own_node" value="3"><div class="radio-dot"></div><span class="radio-label">Node 3 — CBU + Skill Rating</span></label>
+            <label class="radio-option"><input type="radio" name="own_node" value="4"><div class="radio-dot"></div><span class="radio-label">Node 4 — Tiered Placement</span></label>
+            <label class="radio-option"><input type="radio" name="own_node" value="5"><div class="radio-dot"></div><span class="radio-label">Node 5 — Value Appreciation</span></label>
+            <label class="radio-option"><input type="radio" name="own_node" value="6"><div class="radio-dot"></div><span class="radio-label">Node 6 — Enterprise Sales</span></label>
+          </div>
+          <div class="field-error" id="err-own_node">Please select a node.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="q-label">Which node do you feel the LEAST connected to? <span class="q-required">*</span></label>
+          <div class="radio-group" id="weakNode">
+            <label class="radio-option"><input type="radio" name="weak_node" value="1"><div class="radio-dot"></div><span class="radio-label">Node 1 — Attract Talent</span></label>
+            <label class="radio-option"><input type="radio" name="weak_node" value="2"><div class="radio-dot"></div><span class="radio-label">Node 2 — Rigorous Vetting</span></label>
+            <label class="radio-option"><input type="radio" name="weak_node" value="3"><div class="radio-dot"></div><span class="radio-label">Node 3 — CBU + Skill Rating</span></label>
+            <label class="radio-option"><input type="radio" name="weak_node" value="4"><div class="radio-dot"></div><span class="radio-label">Node 4 — Tiered Placement</span></label>
+            <label class="radio-option"><input type="radio" name="weak_node" value="5"><div class="radio-dot"></div><span class="radio-label">Node 5 — Value Appreciation</span></label>
+            <label class="radio-option"><input type="radio" name="weak_node" value="6"><div class="radio-dot"></div><span class="radio-label">Node 6 — Enterprise Sales</span></label>
+          </div>
+          <div class="field-error" id="err-weak_node">Please select a node.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="q-label" for="change90">What is ONE thing that, if changed in the next 90 days, would most strengthen your node? <span class="q-required">*</span></label>
+          <div class="q-hint">Name a process, resource, behavior, decision, or tool — be concrete.</div>
+          <textarea id="change90" name="change90" placeholder="Your answer..." required></textarea>
+          <div class="field-error" id="err-change90">This field is required.</div>
+        </div>
+
+        <div class="question-block">
+          <label class="q-label" for="dependency">Is there a dependency between your node and another node that is currently weak or unclear?</label>
+          <div class="q-hint">Optional. Describe what the handoff looks like and where it breaks down.</div>
+          <textarea id="dependency" name="dependency" placeholder="Optional..."></textarea>
+        </div>
+
+        <div class="question-block">
+          <label class="q-label" for="open">Anything else you want leadership to know?</label>
+          <div class="q-hint">Optional. Use this for anything the questions above did not capture.</div>
+          <textarea id="open" name="open" placeholder="Optional..."></textarea>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ══ SUBMIT ══ -->
+    <div class="submit-area">
+      <p class="submit-note">All required fields must be completed before submitting.</p>
+      <button type="submit" class="submit-btn">
+        <span class="btn-icon">✦</span>
+        Submit My Responses
+      </button>
+    </div>
+
+  </form>
+</div>
+
+<div class="form-footer">
+  <strong>Cyberbacker</strong> &nbsp;·&nbsp; Good to Great Workshop Activity &nbsp;·&nbsp; Responses are reviewed by leadership
+</div>
+
+<script>
+// ── SCROLL ANIMATION ──────────────────────────────────────
+const sections = document.querySelectorAll('.node-section');
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('visible'); });
+}, { threshold: 0.08 });
+sections.forEach(s => observer.observe(s));
+
+// ── SCALE BUTTONS ─────────────────────────────────────────
+document.querySelectorAll('.scale-wrap').forEach(wrap => {
+  wrap.querySelectorAll('.scale-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      wrap.querySelectorAll('.scale-btn').forEach(b => b.classList.remove('selected'));
+      btn.classList.add('selected');
+      const fieldId = wrap.getAttribute('data-field');
+      document.getElementById(fieldId).value = btn.getAttribute('data-val');
+      updateProgress();
+    });
+  });
+});
+
+// ── RADIO OPTIONS ─────────────────────────────────────────
+document.querySelectorAll('.radio-option').forEach(opt => {
+  opt.addEventListener('click', () => {
+    const radio = opt.querySelector('input[type="radio"]');
+    const name = radio.name;
+    document.querySelectorAll(`input[name="${name}"]`).forEach(r => {
+      r.closest('.radio-option').classList.remove('selected');
+    });
+    radio.checked = true;
+    opt.classList.add('selected');
+    updateProgress();
+  });
+});
+
+// ── PROGRESS ──────────────────────────────────────────────
+const requiredIds = ['email','name','role','n1_main','n2_main','n3_main','n4_main','n5_main','n6_main','change90'];
+const requiredRadios = ['own_node','weak_node'];
+
+function updateProgress() {
+  let filled = 0;
+  const total = requiredIds.length + requiredRadios.length;
+  requiredIds.forEach(id => {
+    if (document.getElementById(id) && document.getElementById(id).value.trim()) filled++;
+  });
+  requiredRadios.forEach(name => {
+    if (document.querySelector(`input[name="${name}"]:checked`)) filled++;
+  });
+  const pct = Math.round((filled / total) * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  document.getElementById('progressCount').textContent = filled + ' / ' + total;
+}
+
+document.querySelectorAll('textarea, input[type="text"], input[type="email"]').forEach(el => {
+  el.addEventListener('input', updateProgress);
+});
+
+// ── VALIDATION ────────────────────────────────────────────
+function validate() {
+  let valid = true;
+  requiredIds.forEach(id => {
+    const el = document.getElementById(id);
+    const err = document.getElementById('err-' + id);
+    if (!el.value.trim()) {
+      el.classList.add('error');
+      if (err) err.classList.add('show');
+      valid = false;
+    } else {
+      el.classList.remove('error');
+      if (err) err.classList.remove('show');
+    }
+  });
+  requiredRadios.forEach(name => {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    const err = document.getElementById('err-' + name);
+    if (!checked) {
+      if (err) err.classList.add('show');
+      valid = false;
+    } else {
+      if (err) err.classList.remove('show');
+    }
+  });
+  return valid;
+}
+
+// ── SUBMIT ────────────────────────────────────────────────
+document.getElementById('workshopForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  if (!validate()) {
+    const firstErr = document.querySelector('.error, .field-error.show');
+    if (firstErr) firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    return;
+  }
+
+  // ── Collect data ──
+  const data = {};
+  requiredIds.concat(['dependency','open','n1_scale','n2_scale','n3_scale','n4_scale','n5_scale','n6_scale']).forEach(id => {
+    const el = document.getElementById(id);
+    if (el) data[id] = el.value;
+  });
+  requiredRadios.forEach(name => {
+    const checked = document.querySelector(`input[name="${name}"]:checked`);
+    data[name] = checked ? checked.value : '';
+  });
+
+  console.log('Workshop Form Response:', data);
+
+  // ── Show success ──
+  document.getElementById('workshopForm').style.display = 'none';
+  const s = document.getElementById('successScreen');
+  s.style.display = 'block';
+  document.getElementById('progressFill').style.width = '100%';
+  document.getElementById('progressCount').textContent = 'Complete';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+});
+</script>
+</body>
+</html>
